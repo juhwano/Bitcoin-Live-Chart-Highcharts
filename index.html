@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <!-- highchart -->
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <!-- exprting -->
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+    <title>Bitcoin Price in USD</title>
+  </head>
+  <body>
+    <div id="container" style="height: 700px; min-width: 310px"></div>
+
+    <script>
+      function drawChart() {
+        var chartdata = [];
+        $.getJSON(
+          "https://poloniex.com/public?command=returnChartData&currencyPair=USDT_BTC&start=1455699200&end=9999999999&period=14400",
+          function (data) {
+            $.each(data, function (i, item) {
+              chartdata.push([
+                item.date * 1000,
+                item.open,
+                item.high,
+                item.low,
+                item.close,
+              ]);
+            });
+          }
+        ).done(function () {
+          Highcharts.stockChart("container", {
+            title: {
+              text: "Bitcoin(BTC/USDT)",
+            },
+            rangeSelector: {
+              dropdownLabel: "{rangeTitle}",
+              minInputLabel: "Select start date.",
+              maxInputLabel: "Select end date.",
+              clickButtonAnnouncement: "Viewing {axisRangeDescription}",
+            },
+            plotOptions: {
+              candlestick: {
+                color: "#e74c3c",
+                upColor: "#2ecc71",
+              },
+            },
+            series: [
+              {
+                name: "BTC",
+                type: "candlestick",
+                data: chartdata,
+                tooltip: {
+                  valueDecimals: 8,
+                },
+              },
+            ],
+          });
+        });
+      }
+      drawChart();
+    </script>
+  </body>
+</html>
